@@ -1,0 +1,18 @@
+[package]
+name = "htmx-blog"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+axum = { version = "0.7.4", features = ["macros"] }
+axum-htmx = "0.5.0"
+clap = { version = "4.4.18", features = ["env", "derive"] }
+dotenvy = { version = "0.15.7", features = ["clap"] }
+maud = { version = "0.26.0", features = ["axum"] }
+serde = { version = "1.0.195", features = ["derive"] }
+sqlx = { version = "0.7.3", features = ["postgres", "runtime-tokio", "uuid"] }
+tokio = { version = "1.35.1", features = ["full"] }
+tower-http = { version = "0.5.1", features = ["fs"] }
+uuid = { version = "1.7.0", features = ["v4", "serde"] }

@@ -1,0 +1,6 @@
+hard_tabs = true
+unstable_features = true
+imports_layout = "HorizontalVertical"
+imports_indent = "Block"
+imports_granularity = "Module"
+group_imports = "StdExternalCrate"
