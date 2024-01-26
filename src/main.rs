@@ -23,7 +23,7 @@ async fn main() {
 
 	let pool = PgPoolOptions::new()
 		.max_connections(10)
-		.connect(&config.db.url)
+		.connect(&config.db.url())
 		.await
 		.expect("Can't connect to db");
 
@@ -35,8 +35,9 @@ async fn main() {
 		.with_state(state)
 		.nest_service("/static", ServeDir::new("static"));
 
-	let addr = SocketAddr::from((config.server.host, config.server.port));
-	let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
+	let listener = tokio::net::TcpListener::bind(config.server.addr())
+		.await
+		.unwrap();
 
 	axum::serve(listener, app.into_make_service())
 		.await
@@ -62,7 +63,9 @@ async fn article(State(state): State<ServerState>, Path(id): Path<Uuid>) -> Mark
 }
 
 async fn index(State(state): State<ServerState>) -> Markup {
-	let articles = article::all(state.db).await.expect("A server error occured :)");
+	let articles = article::all(state.db)
+		.await
+		.expect("A server error occured :)");
 
 	html! {
 		(header())

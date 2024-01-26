@@ -5,10 +5,11 @@ services:
     image: postgres
     restart: always
     environment:
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: blog
     ports:
-      - "5432:5432"
+      - "${DATABASE_PORT}:${DATABASE_PORT}"
     volumes:
       - db_volume:/var/lib/postgresql/data
 
@@ -17,6 +18,27 @@ services:
     restart: always
     ports:
       - 8080:8080
+
+  auth:
+    image: quay.io/keycloak/keycloak
+    ports:
+      - "${KEYCLOAK_PORT}:${KEYCLOAK_PORT}"
+    depends_on:
+      - db
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN} 
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      DB_VENDOR: POSTGRES
+      DB_ADDR: db
+      DB_DATABASE: blog
+      DB_USER: ${DATABASE_USER}
+      DB_SCHEMA: public
+      DB_PASSWORD: ${DATABASE_PASSWORD}
+    command: 
+      - start-dev 
+      - --import-realm
+    volumes:
+      - /home/keycloak/realm.json:/opt/keycloak/data/import/realm.json
 
 volumes:
   db_volume:
