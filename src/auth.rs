@@ -1,6 +1,6 @@
 use axum::routing::{get, post};
 use axum::{Form, Router};
-use maud::{Markup, html};
+use maud::{html, Markup};
 
 use crate::user::{AuthSession, Credentials};
 use crate::{base, ServerState};
@@ -13,10 +13,7 @@ pub fn router(state: ServerState) -> Router {
 		.with_state(state)
 }
 
-async fn login(
-	mut auth_session: AuthSession,
-	Form(creds): Form<Credentials>,
-) -> Markup {
+async fn login(mut auth_session: AuthSession, Form(creds): Form<Credentials>) -> Markup {
 	match auth_session.authenticate(creds.clone()).await {
 		Ok(Some(user)) => auth_session.login(&user).await.is_ok(),
 		_ => false,
@@ -30,7 +27,7 @@ async fn login_form() -> Markup {
 	html!(
 		form hx-post="/auth/login" hx-target="#root-div" {
 			label for="username" {"Username: "}
-			input name="username" type="text"; 
+			input name="username" type="text";
 
 			label for="password" {"Password: "}
 			input name="password" type="password";

@@ -1,6 +1,5 @@
 use maud::{html, Markup, DOCTYPE};
 
-
 pub fn header() -> Markup {
 	html! {
 		(DOCTYPE)

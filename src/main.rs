@@ -69,16 +69,16 @@ async fn main() -> Result<()> {
 
 pub fn user_header(user: Option<user::User>) -> Markup {
 	match user {
-	    Some(user) => html!{ 
-			p { "Welcome " (user.full_name())} 
+		Some(user) => html! {
+			p { "Welcome " (user.full_name())}
 			button hx-get="/auth/logout"  hx-target="#auth-div" { "Logout" }
 		},
-	    None => html!( button hx-get="/auth/login_form"  hx-target="#content-div" { "Login" }),
+		None => html!( button hx-get="/auth/login_form"  hx-target="#content-div" { "Login" }),
 	}
 }
 
 pub fn root_div(user: Option<user::User>) -> Markup {
-	html!{
+	html! {
 			div #auth-div {
 				(user_header(user))
 			}
