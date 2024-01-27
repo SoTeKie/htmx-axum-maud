@@ -26,14 +26,12 @@ async fn article(State(state): State<ServerState>, Path(id): Path<Uuid>) -> Mark
 
 fn article_tmpl(article: Article) -> Markup {
 	html! {
-		div #parent-div {
-			h2 { (article.title) }
-			button hx-get="/articles" hx-trigger="click" hx-target="#parent-div" hx-swap="outerHTML" {
-				"Go back"
-			}
-			hr;
-			p { (article.text) }
+		h2 { (article.title) }
+		button hx-get="/articles" hx-trigger="click" hx-target="#root-div" {
+			"Go back"
 		}
+		hr;
+		p { (article.text) }
 	}
 }
 
@@ -42,21 +40,19 @@ async fn index(State(state): State<ServerState>) -> Markup {
 
 	match articles {
 		Some(articles) => index_tmpl(articles),
-		None => base::error_tmpl_full(),
+		None => base::error_tmpl(),
 	}
 }
 
 fn index_tmpl(articles: Vec<Article>) -> Markup {
 	html! {
-		div #parent-div {
-			@for article in &articles {
-				h3 { (article.title) }
-				p { (article.short_text()) "..."}
-				button hx-get={"/articles/" (article.id)} hx-trigger="click" hx-target="#parent-div" hx-swap="outerHTML" {
-					"Read more"
-				}
-				hr;
+		@for article in &articles {
+			h3 { (article.title) }
+			p { (article.short_text()) "..."}
+			button hx-get={"/articles/" (article.id)} hx-trigger="click" hx-target="#root-div" {
+				"Read more"
 			}
+			hr;
 		}
 	}
 }

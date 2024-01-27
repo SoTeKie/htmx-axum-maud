@@ -48,8 +48,8 @@ async fn main() -> Result<()> {
 async fn index() -> Markup {
 	html! {
 		(base::header())
-		div #parent-div {
-			p hx-get="/articles" hx-trigger="load" hx-target="#parent-div" hx-swap="outerHTML" { "Loading..." }
+		div #root-div {
+			p hx-get="/articles" hx-trigger="load" hx-target="#root-div" { "Loading..." }
 		}
 	}
 }

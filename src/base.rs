@@ -18,10 +18,3 @@ pub fn error_tmpl() -> Markup {
 		h1 { "Something went terribly wrong :(" }
 	}
 }
-
-pub fn error_tmpl_full() -> Markup {
-	html! {
-		(header())
-		h1 { "Something went terribly wrong :(" }
-	}
-}
