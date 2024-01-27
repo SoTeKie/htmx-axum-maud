@@ -28,7 +28,7 @@ fn article_tmpl(article: Article) -> Markup {
 	html! {
 		div #parent-div {
 			h2 { (article.title) }
-			button hx-get="/" hx-trigger="click" hx-target="#parent-div" hx-swap="outerHTML" {
+			button hx-get="/articles" hx-trigger="click" hx-target="#parent-div" hx-swap="outerHTML" {
 				"Go back"
 			}
 			hr;
