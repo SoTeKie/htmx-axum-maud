@@ -1,0 +1,12 @@
+-- Add migration script here
+
+CREATE TABLE users(
+	id uuid PRIMARY KEY,
+	username VARCHAR(100) NOT NULL UNIQUE,
+	email VARCHAR(255) NOT NULL UNIQUE,
+	password TEXT NOT NULL,
+	first_name VARCHAR(255) NOT NULL,
+	last_name VARCHAR(255) NOT NULL,
+	role VARCHAR(15) NOT NULL,
+	created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

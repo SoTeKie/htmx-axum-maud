@@ -9,11 +9,14 @@ edition = "2021"
 anyhow = "1.0.79"
 axum = { version = "0.7.4", features = ["macros"] }
 axum-htmx = "0.5.0"
+axum-login = "0.13.1"
 clap = { version = "4.4.18", features = ["env", "derive"] }
 dotenvy = { version = "0.15.7", features = ["clap"] }
 maud = { version = "0.26.0", features = ["axum"] }
+password-auth = "1.0.0"
 serde = { version = "1.0.195", features = ["derive"] }
 sqlx = { version = "0.7.3", features = ["postgres", "runtime-tokio", "uuid"] }
 tokio = { version = "1.35.1", features = ["full"] }
 tower-http = { version = "0.5.1", features = ["fs"] }
+tower-sessions-sqlx-store = { version = "0.10.0", features = ["postgres"] }
 uuid = { version = "1.7.0", features = ["v4", "serde"] }

@@ -27,7 +27,7 @@ async fn article(State(state): State<ServerState>, Path(id): Path<Uuid>) -> Mark
 fn article_tmpl(article: Article) -> Markup {
 	html! {
 		h2 { (article.title) }
-		button hx-get="/articles" hx-trigger="click" hx-target="#root-div" {
+		button hx-get="/articles" hx-target="#content-div" {
 			"Go back"
 		}
 		hr;
@@ -35,7 +35,7 @@ fn article_tmpl(article: Article) -> Markup {
 	}
 }
 
-async fn index(State(state): State<ServerState>) -> Markup {
+pub async fn index(State(state): State<ServerState>) -> Markup {
 	let articles = article::all(state.db).await;
 
 	match articles {
@@ -49,7 +49,7 @@ fn index_tmpl(articles: Vec<Article>) -> Markup {
 		@for article in &articles {
 			h3 { (article.title) }
 			p { (article.short_text()) "..."}
-			button hx-get={"/articles/" (article.id)} hx-trigger="click" hx-target="#root-div" {
+			button hx-get={"/articles/" (article.id)} hx-target="#content-div" {
 				"Read more"
 			}
 			hr;

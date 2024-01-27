@@ -19,27 +19,5 @@ services:
     ports:
       - "${ADMINER_PORT}:8080"
 
-  auth:
-    image: quay.io/keycloak/keycloak
-    ports:
-      - "${KEYCLOAK_PORT_1}"
-      - "${KEYCLOAK_PORT_2}"
-    depends_on:
-      - db
-    environment:
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN} 
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-      DB_VENDOR: POSTGRES
-      DB_ADDR: db
-      DB_DATABASE: blog
-      DB_USER: ${DATABASE_USER}
-      DB_SCHEMA: public
-      DB_PASSWORD: ${DATABASE_PASSWORD}
-    command:
-      - start-dev 
-      - --import-realm
-    volumes:
-      - ./.keycloak/imports:/opt/keycloak/data/import
-
 volumes:
   db_volume:

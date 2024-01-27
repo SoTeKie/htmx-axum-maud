@@ -1,5 +1,6 @@
 use maud::{html, Markup, DOCTYPE};
 
+
 pub fn header() -> Markup {
 	html! {
 		(DOCTYPE)
@@ -9,7 +10,6 @@ pub fn header() -> Markup {
 			script src="/static/htmx.min.js" {};
 		}
 		h1 { "Kierans Blog" }
-		hr;
 	}
 }
 
