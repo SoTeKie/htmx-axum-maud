@@ -1,15 +1,13 @@
-use std::net::SocketAddr;
-
-use axum::extract::{Path, State};
+use article::article_controller;
 use axum::routing::get;
 use axum::Router;
-use maud::{html, Markup, DOCTYPE};
+use maud::{Markup, html};
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use tower_http::services::ServeDir;
-use uuid::Uuid;
 
 mod article;
+mod base;
 mod config;
 
 #[derive(Clone)]
@@ -23,72 +21,37 @@ async fn main() {
 
 	let pool = PgPoolOptions::new()
 		.max_connections(10)
-		.connect(&config.db.url())
+		.connect(&config.db.url)
 		.await
 		.expect("Can't connect to db");
+
+	sqlx::migrate!()
+		.run(&pool)
+		.await
+		.expect("Failed to run migrations");
 
 	let state = ServerState { db: pool };
 
 	let app = Router::new()
 		.route("/", get(index))
-		.route("/articles/:id", get(article))
-		.with_state(state)
+		.nest("/articles", article_controller::router(state))
 		.nest_service("/static", ServeDir::new("static"));
 
 	let listener = tokio::net::TcpListener::bind(config.server.addr())
 		.await
-		.unwrap();
+		.expect("Failed to start tcp listener");
 
 	axum::serve(listener, app.into_make_service())
 		.await
-		.unwrap()
+		.expect("Failed to start server")
 }
 
-#[axum::debug_handler]
-async fn article(State(state): State<ServerState>, Path(id): Path<Uuid>) -> Markup {
-	let article = article::by_id(state.db, id)
-		.await
-		.expect("A server error occured :)");
-
-	html! {
-		div #parent-div {
-			h2 { (article.title) }
-			button hx-get="/" hx-trigger="click" hx-target="#parent-div" hx-swap="outerHTML" {
-				"Go back"
-			}
-			hr;
-			p { (article.text) }
-		}
-	}
-}
-
-async fn index(State(state): State<ServerState>) -> Markup {
-	let articles = article::all(state.db)
-		.await
-		.expect("A server error occured :)");
-
-	html! {
-		(header())
-		div #parent-div {
-			@for article in &articles {
-				h3 { (article.title) }
-				p { (article.short_text()) "..."}
-				button hx-get={"/articles/" (article.id)} hx-trigger="click" hx-target="#parent-div" hx-swap="outerHTML" {
-					"Read more"
-				}
-				hr;
-			}
-		}
-	}
-}
-
-fn header() -> Markup {
-	html! {
-		(DOCTYPE)
-		head {
-			meta charset="utf-8";
-			title { "Kieran's Blog" }
-			script src="/static/htmx.min.js" {};
-		}
+async fn index() -> Markup {
+	html!{
+		(base::header())
+		h1 { "Hello what the fuck" }
+		// div #parent-div {
+		// p hx-get="/articles" hx-trigger="load" hx-target="#parent-div" hx-swap="outerHTML" { "Loading..." }
+		// }
 	}
 }

@@ -3,7 +3,7 @@ version: '3.1'
 services:
   db:
     image: postgres
-    restart: always
+    restart: on-failure
     environment:
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
@@ -15,14 +15,15 @@ services:
 
   adminer:
     image: adminer
-    restart: always
+    restart: on-failure
     ports:
-      - 8080:8080
+      - "${ADMINER_PORT}:8080"
 
   auth:
     image: quay.io/keycloak/keycloak
     ports:
-      - "${KEYCLOAK_PORT}:${KEYCLOAK_PORT}"
+      - "${KEYCLOAK_PORT_1}"
+      - "${KEYCLOAK_PORT_2}"
     depends_on:
       - db
     environment:
@@ -34,11 +35,11 @@ services:
       DB_USER: ${DATABASE_USER}
       DB_SCHEMA: public
       DB_PASSWORD: ${DATABASE_PASSWORD}
-    command: 
+    command:
       - start-dev 
       - --import-realm
     volumes:
-      - /home/keycloak/realm.json:/opt/keycloak/data/import/realm.json
+      - ./.keycloak/imports:/opt/keycloak/data/import
 
 volumes:
   db_volume:

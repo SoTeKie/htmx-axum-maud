@@ -31,19 +31,12 @@ pub struct DbConfig {
 	pub user: String,
 	#[clap(env = "DATABASE_PASSWORD")]
 	pub password: String,
+	#[clap(env = "DATABASE_URL")]
+	pub url: String,
 }
 
 impl ServerConfig {
 	pub fn addr(&self) -> SocketAddr {
 		SocketAddr::from((self.host, self.port))
-	}
-}
-
-impl DbConfig {
-	pub fn url(&self) -> String {
-		format!(
-			"postgres://{}:{}@localhost:{}/blog",
-			self.user, self.password, self.port
-		)
 	}
 }
