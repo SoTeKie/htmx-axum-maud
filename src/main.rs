@@ -1,3 +1,4 @@
+use anyhow::Result;
 use article::article_controller;
 use axum::routing::get;
 use axum::Router;
@@ -5,7 +6,6 @@ use maud::{html, Markup};
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use tower_http::services::ServeDir;
-use anyhow::Result;
 
 mod article;
 mod base;
@@ -25,9 +25,7 @@ async fn main() -> Result<()> {
 		.connect(&config.db.url)
 		.await?;
 
-	sqlx::migrate!()
-		.run(&pool)
-		.await?;
+	sqlx::migrate!().run(&pool).await?;
 
 	let state = ServerState { db: pool };
 
@@ -36,11 +34,9 @@ async fn main() -> Result<()> {
 		.nest("/articles", article_controller::router(state))
 		.nest_service("/static", ServeDir::new("static"));
 
-	let listener = tokio::net::TcpListener::bind(config.server.addr())
-		.await?;
+	let listener = tokio::net::TcpListener::bind(config.server.addr()).await?;
 
-	axum::serve(listener, app.into_make_service())
-		.await?;
+	axum::serve(listener, app.into_make_service()).await?;
 
 	Ok(())
 }
