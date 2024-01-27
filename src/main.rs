@@ -1,7 +1,7 @@
 use article::article_controller;
 use axum::routing::get;
 use axum::Router;
-use maud::{Markup, html};
+use maud::{html, Markup};
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use tower_http::services::ServeDir;
@@ -47,11 +47,10 @@ async fn main() {
 }
 
 async fn index() -> Markup {
-	html!{
+	html! {
 		(base::header())
-		h1 { "Hello what the fuck" }
-		// div #parent-div {
-		// p hx-get="/articles" hx-trigger="load" hx-target="#parent-div" hx-swap="outerHTML" { "Loading..." }
-		// }
+		div #parent-div {
+			p hx-get="/articles" hx-trigger="load" hx-target="#parent-div" hx-swap="outerHTML" { "Loading..." }
+		}
 	}
 }
