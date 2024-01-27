@@ -5,6 +5,7 @@ use maud::{html, Markup};
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use tower_http::services::ServeDir;
+use anyhow::Result;
 
 mod article;
 mod base;
@@ -16,19 +17,17 @@ pub struct ServerState {
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<()> {
 	let config = config::get_config();
 
 	let pool = PgPoolOptions::new()
 		.max_connections(10)
 		.connect(&config.db.url)
-		.await
-		.expect("Can't connect to db");
+		.await?;
 
 	sqlx::migrate!()
 		.run(&pool)
-		.await
-		.expect("Failed to run migrations");
+		.await?;
 
 	let state = ServerState { db: pool };
 
@@ -38,12 +37,12 @@ async fn main() {
 		.nest_service("/static", ServeDir::new("static"));
 
 	let listener = tokio::net::TcpListener::bind(config.server.addr())
-		.await
-		.expect("Failed to start tcp listener");
+		.await?;
 
 	axum::serve(listener, app.into_make_service())
-		.await
-		.expect("Failed to start server")
+		.await?;
+
+	Ok(())
 }
 
 async fn index() -> Markup {
