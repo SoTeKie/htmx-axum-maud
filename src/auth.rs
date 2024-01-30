@@ -15,17 +15,14 @@ pub fn router(state: ServerState) -> Router {
 
 async fn login(mut auth_session: AuthSession, Form(creds): Form<Credentials>) -> Markup {
 	match auth_session.authenticate(creds.clone()).await {
-		Ok(Some(user)) => auth_session.login(&user).await.is_ok(),
-		_ => false,
-	};
-
-	// TODO: Add flash message to highlight login error :c
-	crate::root_div(auth_session.user)
+		Ok(Some(user)) if auth_session.login(&user).await.is_ok() => crate::index_tmpl(Some(user)),
+		_ => base::error_tmpl(),
+	}
 }
 
 async fn login_form() -> Markup {
 	html!(
-		form hx-post="/auth/login" hx-target="#root-div" {
+		form hx-post="/auth/login" hx-target="body" {
 			label for="username" {"Username: "}
 			input name="username" type="text";
 
@@ -39,7 +36,7 @@ async fn login_form() -> Markup {
 
 pub async fn logout(mut auth_session: AuthSession) -> Markup {
 	match auth_session.logout().await {
-		Ok(_) => crate::user_header(None),
+		Ok(_) => crate::index_tmpl(None),
 		Err(_) => base::error_tmpl(),
 	}
 }

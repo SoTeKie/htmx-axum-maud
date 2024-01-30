@@ -1,6 +1,18 @@
 use maud::{html, Markup, DOCTYPE};
 
-pub fn header() -> Markup {
+use crate::user;
+
+pub fn user_header(user: Option<user::User>) -> Markup {
+	match user {
+		Some(user) => html! {
+			p { "Welcome " (user.full_name())}
+			button hx-get="/auth/logout"  hx-target="body" { "Logout" }
+		},
+		None => html!( button hx-get="/auth/login_form"  hx-target="#content-div" { "Login" }),
+	}
+}
+
+pub fn header(user: Option<user::User>) -> Markup {
 	html! {
 		(DOCTYPE)
 		head {
@@ -9,6 +21,8 @@ pub fn header() -> Markup {
 			script src="/static/htmx.min.js" {};
 		}
 		h1 { "Kierans Blog" }
+		(user_header(user))
+		hr;
 	}
 }
 

@@ -10,7 +10,7 @@ use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use tower_http::services::ServeDir;
 use tower_sessions_sqlx_store::PostgresStore;
-use user::{AuthSession, Backend};
+use user::{AuthSession, Backend, User};
 
 mod article;
 mod auth;
@@ -67,33 +67,15 @@ async fn main() -> Result<()> {
 	Ok(())
 }
 
-pub fn user_header(user: Option<user::User>) -> Markup {
-	match user {
-		Some(user) => html! {
-			p { "Welcome " (user.full_name())}
-			button hx-get="/auth/logout"  hx-target="#auth-div" { "Logout" }
-		},
-		None => html!( button hx-get="/auth/login_form"  hx-target="#content-div" { "Login" }),
-	}
+async fn index(auth: AuthSession) -> Markup {
+	index_tmpl(auth.user)
 }
 
-pub fn root_div(user: Option<user::User>) -> Markup {
+pub fn index_tmpl(user: Option<User>) -> Markup {
 	html! {
-			div #auth-div {
-				(user_header(user))
-			}
-			hr;
+		(base::header(user))
 			div #content-div {
 				p hx-get="/articles" hx-trigger="load" hx-target="#content-div" { "Loading..." }
 			}
-	}
-}
-
-pub async fn index(auth: AuthSession) -> Markup {
-	html! {
-		(base::header())
-		div #root-div {
-			(root_div(auth.user))
-		}
 	}
 }
